@@ -76,9 +76,9 @@ const ogImageURL = new URL(ogImage, SITE.url);
           .forEach((el) => observer.observe(el));
       }
 
-      initScrollAnimations();
-
-      document.addEventListener("astro:after-swap", initScrollAnimations);
+      document.addEventListener("astro:page-load", () => {
+        requestAnimationFrame(initScrollAnimations);
+      });
     </script>
   </body>
 </html>
