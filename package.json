@@ -9,8 +9,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/vercel": "^7.8.2",
-    "astro": "^4.16.0",
+    "@astrojs/vercel": "^10.0.2",
+    "astro": "^6.0.8",
     "gray-matter": "^4.0.3",
     "marked": "^15.0.0"
   }
