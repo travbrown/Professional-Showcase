@@ -45,8 +45,9 @@ const links = [
     });
   }
 
-  initNav();
-  document.addEventListener("astro:after-swap", initNav);
+  document.addEventListener("astro:page-load", () => {
+    requestAnimationFrame(initNav);
+  });
 </script>
 
 <style>
