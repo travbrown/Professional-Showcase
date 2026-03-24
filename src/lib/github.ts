@@ -16,6 +16,21 @@ export interface Project {
 const GITHUB_USER = "travbrown";
 const API = "https://api.github.com";
 
+/** Projects from private repos or external sources that can't be fetched via the GitHub API. */
+const STATIC_PROJECTS: Project[] = [
+  {
+    title: "Rebuild JA",
+    description:
+      "Jamaica's first proactive disaster coordination platform — geo-tagging 2,500+ communities to ensure equitable aid distribution after Hurricane Melissa.",
+    tags: ["React", "TypeScript", "Supabase", "Leaflet", "i18n", "Tailwind CSS"],
+    featured: true,
+    order: 1,
+    repoUrl: "",
+    liveUrl: "https://rebuild-ja.com",
+    body: "",
+  },
+];
+
 async function fetchJSON(url: string) {
   try {
     const headers: Record<string, string> = {
@@ -71,5 +86,5 @@ export async function fetchShowcaseProjects(): Promise<Project[]> {
 
   await Promise.all(checks);
 
-  return projects.sort((a, b) => a.order - b.order);
+  return [...STATIC_PROJECTS, ...projects].sort((a, b) => a.order - b.order);
 }
