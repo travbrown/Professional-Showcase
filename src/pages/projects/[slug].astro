@@ -1,0 +1,267 @@
+---
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { fetchShowcaseProjects } from "../../lib/github";
+import type { Project } from "../../lib/github";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await fetchShowcaseProjects();
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+};
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<BaseLayout title={project.title} description={project.description}>
+  <section class="section">
+    <a href="/projects" class="back-link">&larr; All Projects</a>
+
+    <div class="project-detail animate-on-scroll">
+      <div class="detail-header">
+        <div class="detail-badges">
+          {project.featured && <span class="badge">Featured</span>}
+          {project.visibility === "private" && (
+            <span class="badge badge-private">Private</span>
+          )}
+          {project.visibility === "nda" && (
+            <span class="badge badge-nda">NDA</span>
+          )}
+          {project.company && (
+            <span
+              class={`badge badge-company badge-${project.company.toLowerCase()}`}
+            >
+              @ {project.company}
+            </span>
+          )}
+        </div>
+        <h1>{project.title}</h1>
+        <p class="detail-desc">{project.description}</p>
+      </div>
+
+      {project.image && (
+        <div class="detail-image">
+          <img src={project.image} alt={project.title} />
+        </div>
+      )}
+
+      {project.body && (
+        <div class="detail-body" set:html={project.body} />
+      )}
+
+      {project.tags.length > 0 && (
+        <div class="detail-tags">
+          {project.tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <div class="detail-links">
+        {project.repoUrl && (
+          <a
+            href={project.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="detail-link"
+          >
+            Source &rarr;
+          </a>
+        )}
+        {project.liveUrl && (
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="detail-link"
+          >
+            Live &rarr;
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border: none;
+    margin-bottom: 32px;
+    transition: color var(--transition);
+  }
+
+  .back-link:hover {
+    color: var(--text);
+  }
+
+  .detail-header {
+    margin-bottom: 32px;
+  }
+
+  .detail-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 3px;
+  }
+
+  .badge-private {
+    background: var(--text-muted);
+    color: var(--bg);
+  }
+
+  .badge-nda {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .badge-company {
+    background: transparent;
+    font-style: italic;
+  }
+
+  .badge-google {
+    color: #4285f4;
+    border: 1px solid rgba(66, 133, 244, 0.3);
+  }
+
+  .badge-salesforce {
+    color: #00a1e0;
+    border: 1px solid rgba(0, 161, 224, 0.3);
+  }
+
+  .detail-header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin-bottom: 12px;
+  }
+
+  .detail-desc {
+    font-size: 1rem;
+    max-width: 65ch;
+  }
+
+  .detail-image {
+    margin-bottom: 32px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .detail-image img {
+    width: 100%;
+    display: block;
+  }
+
+  .detail-body {
+    max-width: 65ch;
+    margin-bottom: 40px;
+    line-height: 1.8;
+  }
+
+  .detail-body :global(h2) {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .detail-body :global(h3) {
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .detail-body :global(p) {
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+  }
+
+  .detail-body :global(ul) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  .detail-body :global(li) {
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+  }
+
+  .detail-body :global(strong) {
+    color: var(--text);
+  }
+
+  .detail-body :global(em) {
+    color: var(--text-muted);
+  }
+
+  .detail-body :global(code) {
+    font-family: var(--font);
+    font-size: 0.85em;
+    background: var(--bg-alt);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-muted);
+  }
+
+  .detail-links {
+    display: flex;
+    gap: 16px;
+  }
+
+  .detail-link {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 20px;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+
+  .detail-link:hover {
+    color: var(--text);
+    border-color: var(--text);
+  }
+
+  @media (max-width: 640px) {
+    .detail-header h1 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

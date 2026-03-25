@@ -9,44 +9,81 @@ interface Props {
 const { project, index } = Astro.props;
 ---
 
-<article
-  class="project-card animate-on-scroll"
+<div
+  class="project-card-link"
   style={`transition-delay: ${index * 0.1}s`}
 >
-  {project.image && (
-    <div class="project-image">
-      <img src={project.image} alt={project.title} loading="lazy" />
-    </div>
-  )}
-  <div class="project-content">
-    <div class="project-header">
-      <h3>{project.title}</h3>
-      {project.featured && <span class="badge">Featured</span>}
-    </div>
-    <p class="project-desc">{project.description}</p>
-    {project.tags.length > 0 && (
-      <div class="project-tags">
-        {project.tags.map((tag) => (
-          <span class="tag">{tag}</span>
-        ))}
+  <article class="project-card animate-on-scroll">
+    {project.image && (
+      <div class="project-image">
+        <img src={project.image} alt={project.title} loading="lazy" />
       </div>
     )}
-    <div class="project-links">
-      {project.repoUrl && (
-        <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-          Source &rarr;
-        </a>
+    <div class="project-content">
+      <div class="project-header">
+        <h3><a href={`/projects/${project.slug}`} class="card-link">{project.title}</a></h3>
+        <div class="project-badges">
+          {project.featured && <span class="badge">Featured</span>}
+          {project.visibility === "private" && (
+            <span class="badge badge-private">Private</span>
+          )}
+          {project.visibility === "nda" && (
+            <span class="badge badge-nda">NDA</span>
+          )}
+          {project.company && (
+            <span
+              class={`badge badge-company badge-${project.company.toLowerCase()}`}
+            >
+              @ {project.company}
+            </span>
+          )}
+        </div>
+      </div>
+      <p class="project-desc">{project.description}</p>
+      {project.tags.length > 0 && (
+        <div class="project-tags">
+          {project.tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
       )}
-      {project.liveUrl && (
-        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-          Live &rarr;
-        </a>
-      )}
+      <div class="project-links">
+        {project.repoUrl && (
+          <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+            Source &rarr;
+          </a>
+        )}
+        {project.liveUrl && (
+          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+            Live &rarr;
+          </a>
+        )}
+      </div>
     </div>
-  </div>
-</article>
+  </article>
+</div>
 
 <style>
+  .project-card-link {
+    display: block;
+    position: relative;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .card-link {
+    color: inherit;
+    border: none;
+    text-decoration: none;
+  }
+
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
   .project-card {
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -55,9 +92,10 @@ const { project, index } = Astro.props;
       transform var(--transition),
       box-shadow var(--transition),
       border-color var(--transition);
+    height: 100%;
   }
 
-  .project-card:hover {
+  .project-card-link:hover .project-card {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     border-color: var(--accent);
@@ -77,7 +115,7 @@ const { project, index } = Astro.props;
     transition: filter 0.4s ease;
   }
 
-  .project-card:hover .project-image img {
+  .project-card-link:hover .project-image img {
     filter: grayscale(0%);
   }
 
@@ -87,9 +125,16 @@ const { project, index } = Astro.props;
 
   .project-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .project-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
   .badge {
@@ -100,6 +145,33 @@ const { project, index } = Astro.props;
     background: var(--text);
     color: var(--bg);
     border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .badge-private {
+    background: var(--text-muted);
+    color: var(--bg);
+  }
+
+  .badge-nda {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .badge-company {
+    background: transparent;
+    font-style: italic;
+  }
+
+  .badge-google {
+    color: #4285f4;
+    border: 1px solid rgba(66, 133, 244, 0.3);
+  }
+
+  .badge-salesforce {
+    color: #00a1e0;
+    border: 1px solid rgba(0, 161, 224, 0.3);
   }
 
   .project-desc {
@@ -132,6 +204,8 @@ const { project, index } = Astro.props;
     color: var(--text-muted);
     border: none;
     transition: color var(--transition);
+    position: relative;
+    z-index: 1;
   }
 
   .project-links a:hover {

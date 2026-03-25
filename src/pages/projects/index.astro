@@ -1,8 +1,8 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import ProjectCard from "../components/ProjectCard.astro";
-import { fetchShowcaseProjects } from "../lib/github";
-import { SITE } from "../lib/config";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { fetchShowcaseProjects } from "../../lib/github";
+import { SITE } from "../../lib/config";
 
 const projects = await fetchShowcaseProjects();
 ---
@@ -16,8 +16,7 @@ const projects = await fetchShowcaseProjects();
       <p class="section-label">Projects</p>
       <h2>Things I've Built</h2>
       <p>
-        Each project here has a <code>SHOWCASE.md</code> in its repo. If you see
-        it here, I'm proud of it.
+        Personal projects, open source work, and highlights from my professional career.
       </p>
     </div>
 
